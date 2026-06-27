@@ -86,6 +86,10 @@ class pkg_oauthclientInstallerScript
             return true;
         }
 
+        $this->enablePlugin('system', 'miniorangeoauth');
+        $this->enablePlugin('system', 'mooautherrorredirect');
+        $this->enablePlugin('webservices', 'miniorangeoauthclient');
+
         $this->showInstallMessage('');
 
         // Path to helper file
@@ -99,6 +103,21 @@ class pkg_oauthclientInstallerScript
 
         // Call the setup function from the helper
         MoOauthCustomer::send_installation_email();
+    }
+
+    protected function enablePlugin($folder, $element)
+    {
+        $app = Factory::getApplication();
+        $db = method_exists($app, 'getDatabase') ? $app->getDatabase() : Factory::getDbo();
+        $query = $db->getQuery(true)
+            ->update($db->quoteName('#__extensions'))
+            ->set($db->quoteName('enabled') . ' = 1')
+            ->where($db->quoteName('type') . ' = ' . $db->quote('plugin'))
+            ->where($db->quoteName('folder') . ' = ' . $db->quote($folder))
+            ->where($db->quoteName('element') . ' = ' . $db->quote($element));
+
+        $db->setQuery($query);
+        $db->execute();
     }
 
     protected function showInstallMessage($messages=array())
