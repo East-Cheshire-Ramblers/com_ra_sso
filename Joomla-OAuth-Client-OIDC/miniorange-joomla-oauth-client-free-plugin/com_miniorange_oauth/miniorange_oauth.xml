@@ -91,8 +91,4 @@
 			<language tag="zh-CN">zh-CN/zh-CN.com_miniorange_oauth.sys.ini</language>
 		</languages>
 	</administration>
-	<updateservers>
-		<server type="extension" priority="1" name="OAuthClient">https://prod-marketing-site.s3.amazonaws.com/plugins/joomla/joomla_oauth_client_update.xml</server>
-	</updateservers>
-	
 </extension>

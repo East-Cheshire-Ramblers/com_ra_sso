@@ -7,7 +7,7 @@
     <authorUrl>https://www.miniorange.com/</authorUrl>
     <copyright>Copyright (C) 2015 miniOrange. All rights reserved.</copyright>
     <license>GNU General Public License version 3; see LICENSE.txt</license>
-	<version>1.0.2</version>
+	<version>1.0.3</version>
 	<creationDate>Jun 2026</creationDate>
 	<description>RA SSO Login installed successfully.</description>
 	<scriptfile>pkg_script.php</scriptfile>
@@ -34,4 +34,7 @@
 		<language tag="it-IT">it-IT/it-IT.pkg_miniorangeoauth.ini</language>
 		<language tag="it-IT">it-IT/it-IT.pkg_miniorangeoauth.sys.ini</language>
 	</languages>
+	<updateservers>
+		<server type="extension" priority="1" name="RA SSO Login Updates">https://raw.githubusercontent.com/East-Cheshire-Ramblers/com_ra_sso/main/Joomla-OAuth-Client-OIDC/updates/ra_sso_login.xml</server>
+	</updateservers>
 </extension>
