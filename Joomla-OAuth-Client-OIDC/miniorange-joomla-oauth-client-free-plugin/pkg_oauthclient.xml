@@ -7,12 +7,13 @@
     <authorUrl>https://www.miniorange.com/</authorUrl>
     <copyright>Copyright (C) 2015 miniOrange. All rights reserved.</copyright>
     <license>GNU General Public License version 3; see LICENSE.txt</license>
-	<version>3.1.4</version>
-	<creationDate>Jan 2018</creationDate>
+	<version>1.0.1</version>
+	<creationDate>Jun 2026</creationDate>
 	<description>RA SSO Login installed successfully.</description>
 	<scriptfile>pkg_script.php</scriptfile>
 	<files>
 		<file type="plugin" id="miniorangeoauth" group="system">plg_system_miniorangeoauth.zip</file>
+		<file type="plugin" id="mooautherrorredirect" group="system">plg_system_mooautherrorredirect.zip</file>
         <file type="plugin" id="miniorangeoauthclient" group="webservices">plg_webservices_miniorangeoauthclient.zip</file>
 		<file type="component" id="miniorange_oauth" >com_miniorange_oauth.zip</file>
         <file type="library" id="miniorangeoauthplugin">lib_miniorangeoauthplugin.zip</file>
