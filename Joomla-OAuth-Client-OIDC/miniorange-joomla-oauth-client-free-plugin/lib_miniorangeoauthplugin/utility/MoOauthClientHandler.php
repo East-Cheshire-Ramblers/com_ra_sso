@@ -81,12 +81,16 @@ class MoOauthClientHandler
         $redirectUrlByVersion = "";
 
         if(version_compare($version, '4.0.0', '>=')) {
-            $redirectUrlByVersion = "api/index.php/v1/miniorangeoauth";
+            $redirectUrlByVersion = "api/index.php/v1/ra-sso-login";
+        }
+
+        if (isset($params['rarequest']) && !isset($params['morequest'])) {
+            $params['morequest'] = $params['rarequest'];
         }
 
         if (isset($params['morequest']) and $params['morequest'] == 'testattrmappingconfig') {
             $mo_oauth_app_name = $params['app'];
-            $result=$app->redirect(Route::_(Uri::root() . $redirectUrlByVersion  .'?morequest=oauthredirect&app_name=' . urlencode($mo_oauth_app_name) . '&test=true'));
+            $result=$app->redirect(Route::_(Uri::root() . $redirectUrlByVersion  .'?rarequest=oauthredirect&app_name=' . urlencode($mo_oauth_app_name) . '&test=true'));
         }
         else if (isset($params['morequest']) and $params['morequest'] == 'oauthredirect') {
             /*-------------------------OAuth SSO starts with this if-----------*/
@@ -105,7 +109,7 @@ class MoOauthClientHandler
                 $loginredirurl = $_SERVER['HTTP_REFERER'];
             }
 
-            if (!empty($loginredirurl)) {
+            if (!empty($loginredirurl) && strpos($loginredirurl, '/administrator/') === false) {
                 setcookie("returnurl", $loginredirurl);
             }
             
@@ -267,8 +271,6 @@ class MoOauthClientHandler
 
                 if ($checkUser) {
                     $result = self::miniOauthFetchDb('#__miniorange_oauth_customer', array('id'=>'1'));
-                    $test = base64_decode($result['sso_var']);
-                    $test2 = base64_decode($result['sso_test']);
                     $appname = '';
                     $base_url = Uri::root();
                     $c_time = date('m/d/Y H:i:s', $result['cd_plugin']);
@@ -276,13 +278,6 @@ class MoOauthClientHandler
                     $previous_update = date('m/d/Y H:i:s', intval($result['previous_update']));
                     $dno_ssos = $result['dno_ssos'];
                     $tno_ssos = $result['tno_ssos'];
-                    
-                    if ((int)$test2 >= (int)$test) {
-                        MoOauthCustomer::plugin_efficiency_check($email, $appname, $base_url, $c_time, $dno_ssos, $tno_ssos, $previous_update, $present_update, "Authentication Limit Reached.");
-                        $mo_oauth_handler->showFormattedErrorMessage(Text::_('LIB_MINIORANGEOAUTH_AUTHENTICATION_LIMIT_REACHED'));
-                        MoOAuthLogger::addLog('Authentication limit reached', 'INFO');
-                        exit;
-                    }
 
                     $this->loginCurrentUser($checkUser, $name, $email);
                 } 
@@ -526,12 +521,8 @@ class MoOauthClientHandler
         $session->set('session_id', $sessionId);
         $this->updateUsernameToSessionId($user->id, $user->username, $sessionId);
 
-        $result = self::miniOauthFetchDb('#__miniorange_oauth_customer',   ['id' => 1], 'loadAssoc', '*');
-        $test = base64_decode(empty($result['sso_test'])?base64_encode(0):$result['sso_test']);
-
-        $sso_test = (int)$test + 1;
-        $sso_test = base64_encode($sso_test);
-        $sso_var = base64_encode(25);
+        $sso_test = base64_encode(0);
+        $sso_var = base64_encode(0);
         $data = [
             'sso_test' => $sso_test,
             'sso_var'  => $sso_var
@@ -552,13 +543,14 @@ class MoOauthClientHandler
         }
         $cookieData = $input->cookie->getArray();
 
-        if (isset($cookieData['returnurl'])) {
+        if (isset($cookieData['returnurl']) && strpos($cookieData['returnurl'], '/administrator/') === false) {
             $redirectloginuri = $cookieData['returnurl'];
         } 
         else 
         {
             $redirectloginuri = Uri::root() . 'index.php?';
         }
+        setcookie('returnurl', '', time() - 300, '/', "", true, true);
 
 
         MoOauthCustomer::plugin_efficiency_check($user->email, '', $redirectloginuri, '', '', $sso_test, $user->lastvisitDate, '', 'User Login Successful.');
@@ -593,7 +585,7 @@ class MoOauthClientHandler
     {
         $data = [
         'username' => $username,
-        'guest' => '1',
+        'guest' => '0',
         'userid' => $userID
         ];
 

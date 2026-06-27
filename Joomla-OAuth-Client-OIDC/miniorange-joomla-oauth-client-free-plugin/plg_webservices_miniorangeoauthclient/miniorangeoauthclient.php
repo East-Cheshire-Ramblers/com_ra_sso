@@ -37,6 +37,12 @@ class PlgWebservicesMiniorangeoauthclient extends CMSPlugin
     public function onBeforeApiRoute(&$router)
     {
         $router->createCRUDRoutes(
+            'v1/ra-sso-login',
+            'miniorangeoauth',
+            ['com_miniorange_oauth'],
+        );
+
+        $router->createCRUDRoutes(
             'v1/miniorangeoauth',
             'miniorangeoauth',
             ['com_miniorange_oauth'],
@@ -68,6 +74,9 @@ class PlgWebservicesMiniorangeoauthclient extends CMSPlugin
         }
 
         $queryParams = $input->getArray();
+        if (isset($queryParams['rarequest']) && !isset($queryParams['morequest'])) {
+            $queryParams['morequest'] = $queryParams['rarequest'];
+        }
         
         if(isset($queryParams['error']) && isset($queryParams['error_description']))
         {

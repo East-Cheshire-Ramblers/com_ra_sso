@@ -172,9 +172,7 @@ class pkg_oauthclientInstallerScript
     <li> <?php echo Text::_('PKG_MINIORANGEOAUTH_START_CONFIG'); ?></li>
     </ul>
         <div class="mo-row">
-            <a class="btn btn-cstm"  href="index.php?option=com_miniorange_oauth&view=accountsetup&tab-panel=overview"> <?php echo Text::_('PKG_MINIORANGEOAUTH_START_CONFIG_MSG'); ?></a>
-            <a class="btn btn-cstm"  href="https://plugins.miniorange.com/joomla-sso-ldap-mfa-solutions?section=oauth-client" target="_blank"> <?php echo Text::_('PKG_MINIORANGEOAUTH_READ_GUIDES'); ?></a>
-            <a class="btn btn-cstm"  href="https://www.miniorange.com/contact" target="_blank"> <?php echo Text::_('PKG_MINIORANGEOAUTH_SUPPORT_TAB'); ?> </a>
+            <a class="btn btn-cstm" href="index.php?option=com_miniorange_oauth&view=accountsetup&tab-panel=configuration"> <?php echo Text::_('PKG_MINIORANGEOAUTH_START_CONFIG_MSG'); ?></a>
         </div>
         <?php
     }

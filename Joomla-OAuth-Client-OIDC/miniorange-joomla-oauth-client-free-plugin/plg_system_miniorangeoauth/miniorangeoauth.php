@@ -14,6 +14,7 @@
 defined('_JEXEC') or die('Restricted access');
 
 use Joomla\CMS\Plugin\CMSPlugin;
+use Joomla\CMS\Authentication\AuthenticationResponse;
 use Joomla\CMS\Factory;
 use Joomla\CMS\Uri\Uri;
 use Joomla\CMS\User\User;
@@ -60,7 +61,7 @@ class plgSystemMiniorangeoauth extends CMSPlugin
     
 
         if(version_compare($version, '4.0.0', '>=')) {
-            $redirectUrlByVersion = "api/index.php/v1/miniorangeoauth";
+            $redirectUrlByVersion = "api/index.php/v1/ra-sso-login";
         }
 
         if ($sso_status == 1 && $sso_button_enable == 1 && $app->isClient('site')) {
@@ -71,7 +72,7 @@ class plgSystemMiniorangeoauth extends CMSPlugin
                 // Your custom SSO login button
                 $linkAddPlace = '
                     <div class="form-group mt-2">
-                        <a href="' . Uri::root() . $redirectUrlByVersion . '?morequest=oauthredirect&app_name=' . $applicationName . '" 
+                        <a href="' . Uri::root() . $redirectUrlByVersion . '?rarequest=oauthredirect&app_name=' . $applicationName . '" 
                            class="btn btn-primary w-100">
                            Login with ' . $applicationName . '
                         </a>
@@ -171,13 +172,41 @@ class plgSystemMiniorangeoauth extends CMSPlugin
                 }
             
                 if($user_id) {
-                    if (method_exists($app, 'getIdentity')) {
-                        $user = $app->getIdentity((int) $user_id);  // Joomla 4+
-                    } else {
-                        $user = User::getInstance((int) $user_id);  // Joomla 3
+                    $user = User::getInstance((int) $user_id);
+
+                    if (!$user->guest && $user->id) {
+                        $response = new AuthenticationResponse();
+                        $response->status = 1;
+                        $response->type = 'OAuth';
+                        $response->username = $user->username;
+                        $response->email = $user->email;
+                        $response->fullname = $user->name;
+
+                        $app->triggerEvent(
+                            'onUserLogin',
+                            array(
+                                (array) $response,
+                                array('remember' => false)
+                            )
+                        );
+
+                        $session->set('user', $user);
+                        $session->set('session_id', $session_id);
+
+                        if (method_exists($app, 'loadIdentity')) {
+                            $app->loadIdentity($user);
+                        }
+
+                        MoOauthClientHandler::miniOauthUpdateDb(
+                            '#__session',
+                            array(
+                                'username' => $user->username,
+                                'guest' => '0',
+                                'userid' => $user->id
+                            ),
+                            array('session_id' => $session->getId())
+                        );
                     }
-                    $session->set('user', $user);
-                    $session->set('session_id', $session_id);
                 }
             }
 
@@ -422,6 +451,10 @@ class plgSystemMiniorangeoauth extends CMSPlugin
         }
 
         $get = $input->get->getArray();
+        if (isset($get['rarequest']) && !isset($get['morequest'])) {
+            $get['morequest'] = $get['rarequest'];
+        }
+
         $moOauthClientHandler = new MoOauthClientHandler();
         if(isset($get['morequest']) && $get['morequest'] == 'testattrmappingconfig') {
             $moOauthClientHandler->handleOAuthRequest($get);

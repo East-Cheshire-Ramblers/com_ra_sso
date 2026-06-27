@@ -52,6 +52,6 @@ class miniorangeoauthViewAccountSetup extends HtmlView
      */
     protected function addToolBar()
     {
-        ToolBarHelper::title(Text::_('COM_MINIORANGE_OAUTH_PLUGIN_TITLE'), 'mo_oauth_logo mo_oauth_icon');
+        ToolBarHelper::title(Text::_('COM_MINIORANGE_OAUTH_PLUGIN_TITLE'));
     }
 }
