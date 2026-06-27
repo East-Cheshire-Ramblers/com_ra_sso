@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS `#__miniorange_oauth_config` (
 ) DEFAULT COLLATE=utf8_general_ci;
 
 
-CREATE TABLE IF NOT EXISTS `#__miniorange_oauth_logs`(
+CREATE TABLE IF NOT EXISTS `#__miniorange_oauth_logs` (
     `id` INT AUTO_INCREMENT PRIMARY KEY,
     `timestamp` DATETIME NOT NULL,
     `log_level` VARCHAR(10) NOT NULL,
